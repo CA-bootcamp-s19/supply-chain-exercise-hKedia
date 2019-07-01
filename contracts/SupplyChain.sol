@@ -127,7 +127,7 @@ contract SupplyChain {
     refunded any excess ether sent. Remember to call the event associated with this function!*/
 
   function buyItem(uint sku) public forSale(sku) paidEnough(msg.value) checkValue(sku) payable {
-    Item memory _item = items[sku];
+    Item storage _item = items[sku];
     _item.seller.transfer(_item.price);
     _item.buyer = msg.sender;
     _item.state = State.Sold;
@@ -137,16 +137,16 @@ contract SupplyChain {
   /* Add 2 modifiers to check if the item is sold already, and that the person calling this function
   is the seller. Change the state of the item to shipped. Remember to call the event associated with this function!*/
   function shipItem(uint sku) public sold(sku)  {
-    Item memory _item = items[sku];
+    Item storage _item = items[sku];
     require(_item.seller == msg.sender);
     _item.state = State.Shipped;
-    emit LogSold(sku);
+    emit LogShipped(sku);
   }
 
   /* Add 2 modifiers to check if the item is shipped already, and that the person calling this function
   is the buyer. Change the state of the item to received. Remember to call the event associated with this function!*/
   function receiveItem(uint sku) public shipped(sku) {
-    Item memory _item = items[sku];
+    Item storage _item = items[sku];
     require(_item.buyer == msg.sender);
     _item.state = State.Received;
     emit LogReceived(sku);
